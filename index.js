@@ -10,18 +10,14 @@ function rest(c) { return c.slice(1); }
 
 // Reduce
 function reduce_imp(list, fn, start) {
-  console.log("start", start, "list", list, "fn", fn);
   var first = list[0];
   var accumulator = fn.apply(null, [start, first, 0, list]);
-  console.log("accumulator", accumulator);
-
   for(var i = 1; i < list.length; i++) {
-    var newVal = fn.apply(null, [accumulator, list[i], i, list]);
-    console.log("newVal", newVal);
-    accumulator = newVal;
+    accumulator = fn.apply(null, [accumulator, list[i], i, list]);
   }
   return accumulator;
 }
+
 function reduce(list, fn, start) {
   if (list.length == 0) { return start; }
 
