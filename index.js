@@ -5,6 +5,8 @@ function reverse(coll, x) { return [x].concat(coll); }
 function identity_reduce_args(coll, x, index, org_coll) { console.log("ID", "coll", coll, "x", x, "index", index, "org_coll", org_coll); return x; }
 function identity(x) { return x; }
 function odd(x) { return x % 2 !== 0; }
+function first(c) { return c[0]; }
+function rest(c) { return c.slice(1); }
 
 // Reduce
 function reduce_imp(list, fn, start) {
@@ -21,15 +23,11 @@ function reduce_imp(list, fn, start) {
   return accumulator;
 }
 function reduce(list, fn, start) {
-  // if the list is empty, return start
   if (list.length == 0) { return start; }
-  // else, take the first from the list
-  var first = list[0];
-  var rest = list.slice(1);
-  // apply the fn
-  var accumulator = fn.apply(null, [start, first]);
-  // then do to the rest of the list
-  return reduce(rest, fn, accumulator);
+
+  var accumulator = fn.apply(null, [start, first(list)]);
+
+  return reduce(rest(list), fn, accumulator);
 }
 
 // just putting a name on it
