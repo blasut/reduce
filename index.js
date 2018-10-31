@@ -23,6 +23,16 @@ function reduce(fn, accumulator, list) {
   return reduce(fn, accumulated, rest(list));
 }
 
+function imp_reduce(fn, accumulator, collection) {
+  if (collection.length == 0) { return accumulator; }
+
+  collection.forEach(function (thing) {
+    accumulator = fn(accumulator, thing);
+  });
+
+  return accumulator;
+}
+
 function map(fn, collection) {
   return reduce(function (accumulator, item) {
     return accumulator.concat(fn(item));
@@ -66,6 +76,7 @@ function filter2(pred, collection) {
 function test() {
   is(3, reduce(add, 0, [0,1,2]));
   is(3, reduce(add, 0, [1,2]));
+  is(3, imp_reduce(add, 0, [1,2]));
   is(3, reduce.bind(null, add, 0)([1,2]));
 
   eq([2,3], map(inc, [1,2]));
