@@ -1,89 +1,87 @@
-// Helpers
 function add(sum, x) { return sum + x; }
+function inc(x) { return x + 1; }
 function concat(coll, x) { return coll.concat(x); }
-function reverse(coll, x) { return [x].concat(coll); }
-function identity_reduce_args(coll, x, index, org_coll) { console.log("ID", "coll", coll, "x", x, "index", index, "org_coll", org_coll); return x; }
-function identity(x) { return x; }
-function odd(x) { return x % 2 !== 0; }
 function first(c) { return c[0]; }
-function rest(c) { return c.slice(1); }
-
-// Reduce
-function reduce_imp(list, fn, start) {
-  var first = list[0];
-  var accumulator = fn.apply(null, [start, first, 0, list]);
-  for(var i = 1; i < list.length; i++) {
-    accumulator = fn.apply(null, [accumulator, list[i], i, list]);
+function rest(c) { return Array.prototype.slice.call(c, 1); }
+function even(x) { return x % 2 == 0; }
+function is(expected,actual) {
+  if(expected != actual) {
+    console.error("Test failed: ", expected, " != ", actual);
   }
-  return accumulator;
+}
+function eq(expected,actual) {
+  if(JSON.stringify( expected ) != JSON.stringify( actual )) {
+    console.error("Test failed: ", expected, " != ", actual);
+  }
 }
 
-function reduce(list, fn, start) {
-  if (list.length == 0) { return start; }
+function reduce(fn, accumulator, list) {
+  if (list.length == 0) { return accumulator; }
 
-  var accumulator = fn.apply(null, [start, first(list)]);
+  var accumulated = fn.apply(null, [accumulator, first(list)]);
 
-  return reduce(rest(list), fn, accumulator);
+  return reduce(fn, accumulated, rest(list));
 }
 
-// just putting a name on it
-function group_by(coll, f) {
-  return reduce([0,1,2,3], function(coll, x, index) {
-    var toBeKey = f(x);
-    var def = [];
-    if(coll[toBeKey]) {
-      def = coll[toBeKey];
+function map(fn, collection) {
+  return reduce(function (accumulator, item) {
+    return accumulator.concat(fn(item));
+  }, [], collection)
+}
+
+function filter(pred, collection) {
+  return reduce(function (accumulator, item) {
+    if(pred(item)) {
+      return accumulator.concat(item);
+    } else {
+      return accumulator;
     }
-    coll[toBeKey] = [x].concat(def);
-    return coll;
-  }, {});
+    return pred(item) ? accumulator.concat(item) : accumulator;
+  }, [], collection)
 }
 
-function group_by_examples() {
-  // group by?
-  // hardcoded fn in reduce
-  reduce([0,1,2,3], function(coll, x, index) {
-    var toBeKey = odd(x);
-    var def = [];
-    if(coll[toBeKey]) {
-      def = coll[toBeKey];
-    }
-    coll[toBeKey] = [x].concat(def);
-    return coll;
-  }, {});
-
-
-  // group-by: f coll
-  // using anon functions
-  (function(f) {
-    return reduce([0,1,2,3], function(coll, x, index) {
-      var toBeKey = f(x);
-      var def = [];
-      if(coll[toBeKey]) {
-        def = coll[toBeKey];
-      }
-      coll[toBeKey] = [x].concat(def);
-      return coll;
-    }, {});
-  }(odd));
-
-
+function compose(/* functions */) {
+  var args = [].slice.call(arguments);
+  return function (x) {
+    return reduce(function (acc, fn) {
+      return fn(acc)
+    }, x, args.reverse())
+  }
 }
 
+function map2(fn, collection) {
+  var mapper = function (coll, item) {
+    return coll.concat(fn(item));
+  };
+  return reduce(mapper, [], collection)
+}
+function filter2(pred, collection) {
+  return reduce(function (accumulator, item) {
+    return pred(item) ? accumulator.concat(item) : accumulator;
+  }, [], collection)
+}
 
 // tests
-function is(expected,actual) {
-  if(expected !== actual) {
-    console.error("Test failed: ", expected, " !== ", actual);
-  }
-}
 
 function test() {
-  is(3, reduce([0,1,2], add, 0));
-  is(3, reduce([1,2], add, 0));
-  reduce([1,2,3], concat, []);
-  reduce([1,2,3], reverse, []);
-  reduce([1,2,3], identity_reduce_args, []);
-  group_by([0,1,2,3], odd);
+  is(3, reduce(add, 0, [0,1,2]));
+  is(3, reduce(add, 0, [1,2]));
+  is(3, reduce.bind(null, add, 0)([1,2]));
+
+  eq([2,3], map(inc, [1,2]));
+
+  eq([2], filter(even, [1,2]));
+
+  eq(3, compose(inc , inc)(1));
+  eq(7, compose(inc
+                , inc
+                , inc
+                , inc
+                , inc
+                , inc)(1));
+
+  console.log(reduce.bind(null, add, 0))
+
+  console.log("Tests ran")
 }
 test();
