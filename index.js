@@ -59,6 +59,7 @@ function compose(/* functions */) {
   }
 }
 
+// fns/promises -> p -> promise
 function composeP(/* promises */) {
   var promises = [].slice.call(arguments);
   return function (p) {
