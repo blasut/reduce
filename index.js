@@ -59,16 +59,13 @@ function compose(/* functions */) {
   }
 }
 
-function map2(fn, collection) {
-  var mapper = function (coll, item) {
-    return coll.concat(fn(item));
-  };
-  return reduce(mapper, [], collection)
-}
-function filter2(pred, collection) {
-  return reduce(function (accumulator, item) {
-    return pred(item) ? accumulator.concat(item) : accumulator;
-  }, [], collection)
+function composeP(/* promises */) {
+  var promises = [].slice.call(arguments);
+  return function (p) {
+    return reduce(function (acc, fn) {
+      return Promise.resolve(acc).then(fn);
+    }, p, promises.reverse())
+  }
 }
 
 // tests
@@ -92,6 +89,27 @@ function test() {
                 , inc)(1));
 
   console.log(reduce.bind(null, add, 0))
+
+  var promise1 = new Promise(function(resolve, reject) {
+    setTimeout(function() {
+      resolve('foo');
+    }, 300);
+  });
+
+  const add100ToNumberString = composeP(
+    console.log,
+    res => res.toString(),
+    res => Promise.resolve(res + 100),
+    res => Promise.resolve(Number(res)),
+  );
+
+  add100ToNumberString(new Promise(resolve => {
+    setTimeout(() => {
+      resolve('400');
+    }, 2000);
+  }));
+
+
 
   console.log("Tests ran")
 }
