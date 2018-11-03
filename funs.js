@@ -39,7 +39,6 @@ const validate = (predicate, msg) => (x) => {
     return Failure(msg)
   }
 }
-// todo: complement
 const get = (path) => (x) => {
   if(x[path] !== undefined) {
     return x[path]
@@ -47,6 +46,8 @@ const get = (path) => (x) => {
     throw "Couldnt find thing"
   }
 }
+
+// todo: complement
 const equal = (a) => (b) => ( a === b )
 const notEqual = (a) => (b) => ( a !== b )
 
