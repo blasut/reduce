@@ -11,7 +11,7 @@ function is(expected,actual) {
 }
 function eq(expected,actual) {
   if(JSON.stringify( expected ) != JSON.stringify( actual )) {
-    console.error("Test failed: ", expected, " != ", actual);
+    console.error("Test failed: ", expected, " not eq ", actual);
   }
 }
 
@@ -22,6 +22,7 @@ function reduce(fn, accumulator, list) {
 
   return reduce(fn, accumulated, rest(list));
 }
+
 
 function imp_reduce(fn, accumulator, collection) {
   if (collection.length == 0) { return accumulator; }
@@ -50,7 +51,7 @@ function filter(pred, collection) {
   }, [], collection)
 }
 
-function compose(/* functions */) {
+function pipe(/* functions */) {
   var args = [].slice.call(arguments);
   return function (x) {
     return reduce(function (acc, fn) {
@@ -59,8 +60,17 @@ function compose(/* functions */) {
   }
 }
 
+function compose(/* functions */) {
+  var args = [].slice.call(arguments).reverse();
+  return function (x) {
+    return reduce(function (acc, fn) {
+      return fn(acc)
+    }, x, args)
+  }
+}
+
 // fns/promises -> p -> promise
-function composeP(/* promises */) {
+function pipeP(/* promises */) {
   var promises = [].slice.call(arguments);
   return function (p) {
     return reduce(function (acc, fn) {
@@ -97,7 +107,7 @@ function test() {
     }, 300);
   });
 
-  const add100ToNumberString = composeP(
+  const add100ToNumberString = pipeP(
     console.log,
     res => res.toString(),
     res => Promise.resolve(res + 100),
