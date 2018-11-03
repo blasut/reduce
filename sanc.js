@@ -12,6 +12,9 @@ var arr = [1,2,3]
 
 console.log(
   S.head(arr)
-  , S.filter (S.lt (3)) ([1, 2, 3, 4, 5])
+)
+
+console.log(
+  S.filter (S.lt (3)) ([1, 2, 3, 4, 5])
 )
 
