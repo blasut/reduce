@@ -84,10 +84,22 @@ function combinedValidation(input) {
   )
 }
 
+const combinedValidationPointFree = compose(
+  bind( validateLength ),
+  bind( validateEmail ),
+  validateName
+);
+
 function useCase(input) {
-  return composeK(lift(fixEmail),
-                  combinedValidation)(input);
+  return composeK(
+    lift(fixEmail),
+    combinedValidationPointFree)(input);
 }
+
+const useCasePointfree = composeK(
+  lift(fixEmail),
+  combinedValidationPointFree
+);
 
 const makeInput = (name = "", email = "") => ({
   name,
@@ -105,4 +117,4 @@ function test() {
 
   console.log("Tests ran in funs")
 }
-test();
+                      test();
