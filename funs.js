@@ -39,13 +39,7 @@ const validate = (predicate, msg) => (x) => {
     return Failure(msg)
   }
 }
-const get = (path) => (x) => {
-  if(x[path] !== undefined) {
-    return x[path]
-  } else {
-    throw "Couldnt find thing"
-  }
-}
+const get = (path) => (x) => ( x[path] )
 
 // todo: complement
 const equal = (a) => (b) => ( a === b )
@@ -61,6 +55,7 @@ function validateLength(input) {
     return Success(input)
   }
 }
+
 function validateName(input) {
   if(input.name == "") {
     return Failure("Name must not be blank")
