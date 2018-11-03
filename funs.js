@@ -13,12 +13,12 @@ const Failure = (msg) => ({ Failure: msg });
 const Success = (x)   => ({ Success: x });
 const lift    = (fn)  => (x) => ( Success(fn(x)) )
 
-const composeK = (switch1, switch2) => (x) => {
-  const res = switch1(x);
+const composeK = (fn1, fn2) => (x) => {
+  const res = fn1(x);
   if(res.Failure) {
     return res;
   } else {
-    return switch2(res.Success);
+    return fn2(res.Success);
   }
 }
 const bind = (fn) => (eitherInput) => {
