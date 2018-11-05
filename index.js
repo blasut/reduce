@@ -24,10 +24,18 @@ function reduce(fn, accumulator, list) {
 }
 
 
-function imp_reduce(fn, accumulator, collection) {
+function imp_reduce1(fn, accumulator, collection) {
   collection.forEach(function (thing) {
     accumulator = fn(accumulator, thing);
   });
+
+  return accumulator;
+}
+
+function imp_reduce(fn, accumulator, collection) {
+  for (const thing of collection) {
+    accumulator = fn(accumulator, thing);
+  }
 
   return accumulator;
 }
