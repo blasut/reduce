@@ -25,8 +25,6 @@ function reduce(fn, accumulator, list) {
 
 
 function imp_reduce(fn, accumulator, collection) {
-  if (collection.length == 0) { return accumulator; }
-
   collection.forEach(function (thing) {
     accumulator = fn(accumulator, thing);
   });
