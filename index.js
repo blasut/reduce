@@ -77,6 +77,12 @@ function pipeP(/* promises */) {
   }
 }
 
+function sum(collection) {
+  return reduce(function (result, n) {
+    return result + n;
+  }, 0, collection)
+}
+
 // tests
 
 function test() {
