@@ -39,6 +39,7 @@ const validate = (predicate, msg) => (x) => {
     return Failure(msg)
   }
 }
+
 const get = (path) => (x) => ( x[path] )
 
 // todo: complement
@@ -48,21 +49,30 @@ const notEqual = (a) => (b) => ( a !== b )
 const validateEmail = validate(compose(notEqual(""), get("email")),
                                "Email must not be blank");
 
-function validateLength(input) {
-  if(input.email.length > 5) {
-    return Failure("Email must not be longer than 5 chars")
-  } else {
+function validateLength1(input) {
+  if(input.email.length < 6) {
     return Success(input)
+  } else {
+    return Failure("Email must not be longer than 5 chars")
   }
 }
 
-function validateName(input) {
-  if(input.name == "") {
-    return Failure("Name must not be blank")
-  } else {
+const qt = (x) => (y) => ( x > y )
+const length = (x) => ( x.length )
+const validateLength = validate(compose(qt(6), length, get("email")),
+                                "Email must not be longer than 5 chars");
+
+
+function validateName1(input) {
+  if(input.name !== "") {
     return Success(input)
+  } else {
+    return Failure("Name must not be blank")
   }
 }
+
+const validateName = validate(compose(notEqual(""), get("name")),
+                              "Name must not be blank");
 
 // Others
 const fixEmail = (input) => {
@@ -91,9 +101,7 @@ const combinedValidationPointFree = compose(
 );
 
 function useCase(input) {
-  return composeK(
-    lift(fixEmail),
-    combinedValidationPointFree)(input);
+  return composeK(lift(fixEmail), combinedValidationPointFree)(input);
 }
 
 const useCasePointfree = composeK(
@@ -106,10 +114,16 @@ const makeInput = (name = "", email = "") => ({
   email
 })
 
-function test() {
+function fun_test() {
   eq({ Failure: "Name must not be blank" }, combinedValidation(makeInput()))
+  eq({ Failure: "Name must not be blank" }, validateName(makeInput()))
+  eq({ Failure: "Name must not be blank" }, validateName1(makeInput()))
+
   eq({ Failure: "Email must not be blank" }, combinedValidation(makeInput("Lau")))
   eq({ Failure: "Email must not be longer than 5 chars" }, combinedValidation(makeInput("Lau", "emaila")))
+
+  eq({ Failure: "Email must not be longer than 5 chars" }, validateLength1(makeInput("Lau", "emaila")))
+  eq({ Failure: "Email must not be longer than 5 chars" }, validateLength(makeInput("Lau", "emaila")))
 
   eq({ Success: { name: "Lau", email: "email"}}, combinedValidation(makeInput("Lau", "email")))
 
@@ -117,4 +131,5 @@ function test() {
 
   console.log("Tests ran in funs")
 }
-                      test();
+
+fun_test();
