@@ -13,6 +13,20 @@ const Failure = (msg) => ({ Failure: msg });
 const Success = (x)   => ({ Success: x });
 const lift    = (fn)  => (x) => ( Success(fn(x)) )
 
+function Either(left, right) {
+  this.left = left;
+  this.right = right;
+}
+
+Either.prototype.map = function(f) {
+  return this.right ?
+    new Either(this.left, f(this.right)) :
+    new Either(f(this.left), null);
+}
+
+console.log("either", new Either(1,2));
+console.log("either", new Either(1,2).map(inc));
+
 const composeK = (fn1, fn2) => (x) => {
   const res = fn1(x);
   if(res.Failure) {
