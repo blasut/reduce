@@ -94,6 +94,15 @@ function combinedValidation(input) {
   )
 }
 
+const combinedValidations = (input) => (
+  compose(
+    bind( validateLength ),
+    bind( validateEmail ),
+    validateName
+  )
+  (input)
+);
+
 const combinedValidationPointFree = compose(
   bind( validateLength ),
   bind( validateEmail ),
@@ -126,6 +135,7 @@ function fun_test() {
   eq({ Failure: "Email must not be longer than 5 chars" }, validateLength(makeInput("Lau", "emaila")))
 
   eq({ Success: { name: "Lau", email: "email"}}, combinedValidation(makeInput("Lau", "email")))
+  eq({ Success: { name: "Lau", email: "email"}}, combinedValidations(makeInput("Lau", "email")))
 
   eq({ Success: { name: "Lau", email: "email"}}, useCase(makeInput("Lau", "EMAIL")))
 
